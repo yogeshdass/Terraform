@@ -1,0 +1,87 @@
+{
+    "variable" : {
+        "name" : {
+            "default": "albname"
+        },
+        "subnet": {
+            "default": ["subnets"]
+        },
+        "tag": {
+            "default": "tag name"
+        },
+        "sg": {
+            "default": ["sg id"]
+        },
+        "vpc": {
+            "default": "vpc id"
+        }      
+    },
+    "resource": {
+        "aws_s3_bucket": {
+            "logsbucket": {
+                "bucket": "alblogsibs",
+                "tags": {
+                    "Name": "ALB-logs"
+                }
+            }
+        },
+        "aws_s3_bucket_policy": {
+            "put-object": {
+                "bucket": "${aws_s3_bucket.logsbucket.id}",
+                "policy": "{\n \"Version\": \"2012-10-17\",\n \"Statement\": [\n {\n \"Sid\": \"\",\n \"Action\": [\n \"s3:PutObject\"\n ],\n \"Effect\": \"Allow\",\n \"Resource\": \"arn:aws:s3:::${aws_s3_bucket.logsbucket.id}/*\",\n \"Principal\": \"*\"\n }\n ]\n }\n"
+            }
+        },
+        "aws_lb":{
+            "alb": {
+                "name": "${var.name}",
+                "internal": "false",
+                "load_balancer_type": "application",
+                "security_groups": "${var.sg}",
+                "subnets": "${var.subnet}",
+                "access_logs": {
+                    "bucket": "${aws_s3_bucket.logsbucket.bucket}",
+                    "enabled": "true"
+                },
+                "tags" : {
+                    "Name": "${var.tag}"
+                }
+              }
+            },
+        "aws_lb_target_group":{
+            "albtg":{
+                "name": "albtg",
+                "port": "80",
+                "protocol": "HTTP",
+                "vpc_id": "${var.vpc}",
+                
+                "health_check": {
+                        "port": "80",
+                        "protocol": "HTTP"                                      
+                },
+                "stickiness":{
+                    "type": "lb_cookie",
+                    "enabled": "true",
+                    "cookie_duration": "15"
+                }
+            }
+        },
+        "aws_lb_listener":{
+            "alblistener":{
+                "load_balancer_arn": "${aws_lb.alb.arn}",
+                "port": "443",
+                "protocol":"HTTPS",
+                "certificate_arn": "arn:aws:acm:us-east-1:058003176618:certificate/3e6a603b-e27f-487f-9d9a-89393604cb7a",
+                "default_action": {
+                    "target_group_arn": "${aws_lb_target_group.albtg.arn}",
+                    "type": "forward"
+                }
+            }
+        },
+        "aws_lb_listener_certificate": {
+            "alblc": {
+                "listener_arn": "${aws_lb_listener.alblistener.arn}",
+                "certificate_arn": "arn:aws:acm:us-east-1:058003176618:certificate/3e6a603b-e27f-487f-9d9a-89393604cb7a"
+            }
+        }    
+    }    
+ }

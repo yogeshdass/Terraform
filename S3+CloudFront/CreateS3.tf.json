@@ -1,0 +1,30 @@
+{
+    "provider": {
+        "aws":{
+            "region": "us-east-1"
+        }
+    },
+    "variable": {
+        "bucket": {
+            "default": "imp-s3"
+        }
+    },
+    "resource": {
+        "aws_s3_bucket": {
+            "ImageBucket": {
+                "bucket": "${var.bucket}",
+                "acl": "private",
+                "tags": {
+                    "Name": "Images S3 bucket",
+                    "Environment": "PROD"
+                }
+            }            
+        },
+        "aws_s3_bucket_policy": {
+            "get-object": {
+                "bucket": "${aws_s3_bucket.ImageBucket.id}",
+                "policy": "{\n \"Version\": \"2012-10-17\",\n \"Statement\": [\n {\n \"Sid\": \"\",\n \"Action\": [\n \"s3:GetObject\"\n ],\n \"Effect\": \"Allow\",\n \"Resource\": \"arn:aws:s3:::${aws_s3_bucket.ImageBucket.id}/*\",\n \"Principal\": \"*\"\n }\n ]\n }\n"
+            }
+        }
+    }
+}

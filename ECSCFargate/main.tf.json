@@ -1,0 +1,78 @@
+{
+    "provider": {
+        "aws": {
+            "region": "us-east-1"
+        }
+    },
+    "module": {
+        "ecstaskexerole": {
+            "source": "../modules/IAM_Roles",
+            "role_name": "AmazonECStaskexecutionrole",
+            "assume_role_policy_path": "${file(\"./assume_role_policies/assumebyecs.json\")}",
+            "policy_name": "AmazonECStaskexecutionrolepolicy",
+            "permission_policy_path": "${file(\"./permissions_policies/ecstaskexecutionpolicy.json\")}"
+        },
+        "ecsservicerole": {
+            "source": "../modules/IAM_Roles",
+            "role_name": "AmazonECSservicerole",
+            "assume_role_policy_path": "${file(\"./assume_role_policies/ecs-role.json\")}",
+            "policy_name": "AmazonECStaskexecutionrolepolicy",
+            "permission_policy_path": "${file(\"./permissions_policies/ecs-service-role-policy.json\")}"
+        }
+    },
+    "resource": {
+        "aws_ecs_task_definition": {
+            "service": {
+                "family": "service",
+                "container_definitions": "${file(\"./task-definitions/service.json\")}",
+                "requires_compatibilities": ["FARGATE"],
+                "execution_role_arn": "arn:aws:iam::058003176618:role/ecsTaskExecutionRole",
+                "task_role_arn": "arn:aws:iam::058003176618:role/ecsTaskExecutionRole",
+                "network_mode": "awsvpc",
+                "cpu": 256,
+                "memory": 512
+              }
+        },
+        "aws_lb":{
+            "alb": {
+                "name": "alb4ecs",
+                "internal": "false",
+                "load_balancer_type": "application",
+                "security_groups": ["${aws_security_group.sginline.id}"],
+                "subnets": ["${data.aws_subnet.snets.*.id}"],
+                "tags" : {
+                    "Name": "ALB for ECS"
+                }
+              }
+            },
+        "aws_lb_target_group":{
+            "albtg":{
+                "name": "albtg",
+                "port": "80",
+                "protocol": "HTTP",
+                "vpc_id": "${data.aws_vpc.default.id}",
+                
+                "health_check": {
+                        "port": "80",
+                        "protocol": "HTTP"                                      
+                },
+                "stickiness":{
+                    "type": "lb_cookie",
+                    "enabled": "true",
+                    "cookie_duration": "15"
+                }
+            }
+        },
+        "aws_lb_listener":{
+            "alblistener":{
+                "load_balancer_arn": "${aws_lb.alb.arn}",
+                "port": "80",
+                "protocol":"HTTP",
+                "default_action": {
+                    "target_group_arn": "${aws_lb_target_group.albtg.arn}",
+                    "type": "forward"
+                }
+            }
+        }   
+    }
+}

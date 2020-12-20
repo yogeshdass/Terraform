@@ -1,0 +1,50 @@
+{
+    "variable": {
+        "tags":{
+            "default":"IMP-CF"
+        }
+    },
+    "resource": {
+        "aws_cloudfront_distribution": {
+            "s3-distro": {
+                "origin": {
+                    "domain_name": "${aws_s3_bucket.ImageBucket.bucket_domain_name}",
+                    "origin_id": "imp-s3-origin"
+                },
+                "default_cache_behavior": {
+                    "allowed_methods": ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"],
+                    "cached_methods": ["GET", "HEAD"],
+                    "forwarded_values": {
+                        "cookies": {
+                            "forward": "none"
+                        },
+                        "query_string": false
+                    },
+                    "target_origin_id": "imp-s3-origin",
+                    "viewer_protocol_policy": "redirect-to-https",
+                    "min_ttl": 0,
+                    "default_ttl": 3600,
+                    "max_ttl": 86400,
+                    "smooth_streaming": false,
+                    "compress": false
+                },
+                "enabled": true,
+                "viewer_certificate": {
+                    "acm_certificate_arn": "arn:aws:acm:us-east-1:058003176618:certificate/3e6a603b-e27f-487f-9d9a-89393604cb7a",
+                    "ssl_support_method": "sni-only",
+                    "minimum_protocol_version": "TLSv1.2_2018"
+                },
+                "tags": {
+                    "Environment": "${var.tags}"
+                },
+                "is_ipv6_enabled": true,
+                "restrictions": {
+                    "geo_restriction": {
+                        "restriction_type": "none"
+                    }
+                },
+                "depends_on":["aws_s3_bucket.ImageBucket"]
+            }
+        }
+    }
+}
