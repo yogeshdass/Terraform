@@ -1,12 +1,12 @@
 resource "aws_iam_role_policy" "policy" {
     count = var.access_policy != "" ?1:0
-    name = "${var.name}_access_policy"
+    name = "${var.name}"
     role = aws_iam_role.role.id
     policy = var.access_policy
 }
 
 resource "aws_iam_role" "role" {
-    name = "${var.name}Role"
+    name = "${var.name}"
     force_detach_policies = true
     assume_role_policy = var.allowed_service_policy
 }
@@ -19,6 +19,6 @@ resource "aws_iam_role_policy_attachment" "PolicyArns" {
 
 resource "aws_iam_instance_profile" "InstanceProfile" {
     count = var.enable_instance_profile?1:0
-    name = "${var.name}Profile"
+    name = "${var.name}"
     role = aws_iam_role.role.id
 }

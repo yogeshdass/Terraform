@@ -1,7 +1,7 @@
 # IAM user module
 
 This module can be used to create users and applying polices on them.
-GPG is required when user with console access is created.
+GPG is ONLY required when a user with console access is created.
 The password will be in base64 encoded and signed with gpg key so private gpg key is should be imported before decrytion.
 
 View the user password with below command
