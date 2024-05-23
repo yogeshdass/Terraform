@@ -11,12 +11,23 @@ data "aws_iam_policy_document" "AssumeRole" {
 }
 
 data "aws_iam_policy_document" "CustomInlinePermissions" {
-  statement {
+    statement {
         actions =  [
             "iam:PassRole"
         ]
         resources =  [
             "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.name}-role"
+        ]
+    }
+
+    statement {
+        actions =  [
+            "s3:ListBucket",
+            "s3:getObject",
+            "s3:PutObject"
+        ]
+        resources =  [
+            "${module.s3.s3_bucket_arn}/*"
         ]
     }
 }
