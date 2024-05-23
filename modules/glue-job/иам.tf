@@ -47,8 +47,5 @@ module "iam" {
     name = "${var.name}-role"
     allowed_service_policy = data.aws_iam_policy_document.AssumeRole.json
     access_policy = data.aws_iam_policy_document.CustomInlinePermissions.json
-    policy_arns =  [
-        data.aws_iam_policy.AWSGlueServiceRole.arn,
-        aws_iam_policy.additional_json.arn
-    ]
+    policy_arns = var.attach_policy_json ? [data.aws_iam_policy.AWSGlueServiceRole.arn, aws_iam_policy.additional_json[0].arn] : [data.aws_iam_policy.AWSGlueServiceRole.arn]
 }
