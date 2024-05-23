@@ -36,12 +36,19 @@ data "aws_iam_policy" "AWSGlueServiceRole" {
     name = "AWSGlueServiceRole"
 }
 
+resource "aws_iam_policy" "additional_json" {
+  count = var.attach_policy_json ? 1 : 0
+  name   = "${var.name}-additional_policies"
+  policy = var.policy_json
+}
+
 module "iam" {
     source = "git::https://github.com/yogeshdass/terraform//modules/iam/role"
     name = "${var.name}-role"
     allowed_service_policy = data.aws_iam_policy_document.AssumeRole.json
     access_policy = data.aws_iam_policy_document.CustomInlinePermissions.json
     policy_arns =  [
-        data.aws_iam_policy.AWSGlueServiceRole.arn
+        data.aws_iam_policy.AWSGlueServiceRole.arn,
+        aws_iam_policy.additional_json.arn
     ]
 }

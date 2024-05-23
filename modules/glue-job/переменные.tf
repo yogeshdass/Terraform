@@ -48,3 +48,15 @@ variable "command_name" {
     type = string
     default = "glueetl"
 }
+
+variable "attach_policy_json" {
+  type = bool
+  description = "(optional) wish to add addional policies ?"
+  default = false
+}
+
+variable "policy_json" {
+  type = string
+  description = "(optional) if wish to add addional policies then pass the policy in json format"
+  default = null
+}
