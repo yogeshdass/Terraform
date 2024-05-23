@@ -11,6 +11,7 @@ resource "aws_s3_object" "this" {
 
 resource "aws_glue_job" "this" {
   name     = var.name
+  description = var.description
   role_arn = module.iam.RoleArn
   glue_version = var.glue_version
   worker_type = var.worker_type

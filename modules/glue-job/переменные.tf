@@ -3,6 +3,12 @@ variable "name" {
     description = "Name of the glue job"
 }
 
+variable "description" {
+  type = string
+  description = "(optional) description"
+  default = ""
+}
+
 variable "script_path" {
     type = string
     description = "path of the script"
