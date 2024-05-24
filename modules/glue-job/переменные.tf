@@ -77,7 +77,6 @@ variable "glue_properties" {
     "--enable-continuous-cloudwatch-log" = "true"
     "--enable-metrics" = "true"
     "--enable-observability-metrics" = "true"
-    "--enable-spark-ui" = "true"
     "--enable-glue-datacatalog" = "true"
   }
 }
