@@ -60,3 +60,26 @@ variable "policy_json" {
   description = "(optional) if wish to add addional policies then pass the policy in json format"
   default = null
 }
+
+variable "execution_class" {
+  type = string
+  description = "(optional)  Indicates whether the job is run with a standard or flexible execution class. The standard execution class is ideal for time-sensitive workloads that require fast job startup and dedicated resources. Valid value: FLEX, STANDARD"
+  default = "STANDARD"
+}
+
+variable "glue_properties" {
+  type = map(string)
+  description = "(optional) enable basic and advanced glue properties"
+  default = {
+    "--enable-job-insights" = "true"
+    "--job-language"        = "python"
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--enable-continuous-cloudwatch-log" = "true"
+    "--enable-metrics" = "true"
+    "--enable-observability-metrics" = "true"
+    "--enable-spark-ui" = "true"
+    "--enable-glue-datacatalog" = "true"
+    "--TempDir" = "s3://${module.s3.s3_bucket_id}/temporary/"
+    "--spark-event-logs-path" = "s3://${module.s3.s3_bucket_id}/sparkHistoryLogs/"
+  }
+}

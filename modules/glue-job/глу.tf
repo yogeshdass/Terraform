@@ -18,9 +18,13 @@ resource "aws_glue_job" "this" {
   number_of_workers = var.number_of_workers
   max_retries = var.max_retries
   timeout = var.timeout
+  execution_class = var.execution_class
+  default_arguments = var.glue_properties
+
   execution_property {
     max_concurrent_runs = var.max_concurrent_runs
   }
+
   command {
     name = var.command_name
     script_location = "s3://${module.s3.s3_bucket_id}/${local.key}"
