@@ -79,7 +79,5 @@ variable "glue_properties" {
     "--enable-observability-metrics" = "true"
     "--enable-spark-ui" = "true"
     "--enable-glue-datacatalog" = "true"
-    "--TempDir" = "s3://${module.s3.s3_bucket_id}/temporary/"
-    "--spark-event-logs-path" = "s3://${module.s3.s3_bucket_id}/sparkHistoryLogs/"
   }
 }
